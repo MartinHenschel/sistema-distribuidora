@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema Distribuidora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>📦 Sistema da Distribuidora</h1>
+
+    <a href="/">Home</a> |
+    <a href="/clientes">Clientes</a> |
+    <a href="/produtos">Produtos</a> |
+    <a href="/vendas">Vendas</a> |
+    <a href="/dashboard">Dashboard</a>
+
+    <hr>
+
+    {% block content %}{% endblock %}
+
+</body>
+</html>

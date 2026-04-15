@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>📊 Histórico de Vendas</h2>
+
+<form method="GET" action="/historico">
+    <input type="text" name="busca" placeholder="Buscar cliente..." value="{{ busca }}">
+    <button type="submit">Buscar</button>
+</form>
+
+<table border="1" width="100%">
+    <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Produto</th>
+        <th>Quantidade</th>
+        <th>Total</th>
+        <th>Data</th>
+    </tr>
+
+    {% for v in vendas %}
+    <tr>
+        <td>{{ v[0] }}</td>
+        <td>{{ v[1] }}</td>
+        <td>{{ v[2] }}</td>
+        <td>{{ v[3] }}</td>
+        <td>R$ {{ v[4] }}</td>
+        <td>{{ v[5] }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}

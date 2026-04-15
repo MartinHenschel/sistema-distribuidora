@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>🧾 Nova Venda</h2>
+
+<!-- BOTÃO HISTÓRICO -->
+<button type="button" onclick="window.location.href='/historico'">
+    📊 Ver Histórico de Vendas
+</button>
+
+<br><br>
+
+<!-- MENSAGENS -->
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for msg in messages %}
+                <li>{{ msg }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+<form action="/add_venda" method="POST">
+
+    <label>Cliente:</label>
+    <select name="cliente">
+        {% for c in clientes %}
+            <option value="{{ c[0] }}">{{ c[1] }}</option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <label>Produto:</label>
+    <select name="produto">
+        {% for p in produtos %}
+            <option value="{{ p[0] }}">
+                {{ p[1] }} (Estoque: {{ p[3] }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <input type="number" name="quantidade" placeholder="Quantidade" required>
+
+    <br><br>
+
+    <button type="submit">Vender</button>
+
+</form>
+
+{% endblock %}

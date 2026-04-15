@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222636;
+    --border: rgba(255,255,255,0.07);
+    --blue: #4f8ef7;
+    --green: #2ecc8f;
+    --orange: #f7934f;
+    --red: #f74f6e;
+    --text: #e8eaf0;
+    --muted: #7b8099;
+  }
+
+  .db-wrap {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 36px 32px 60px;
+    color: var(--text);
+    box-sizing: border-box;
+  }
+
+  .db-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+  }
+
+  .db-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0;
+    color: #fff;
+  }
+
+  .db-title span {
+    color: var(--blue);
+  }
+
+  .db-date {
+    font-size: 0.82rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  /* ── Cards ── */
+  .db-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .db-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .db-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  .db-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .db-card.blue::before  { background: var(--blue); }
+  .db-card.green::before { background: var(--green); }
+  .db-card.orange::before{ background: var(--orange); }
+  .db-card.red::before   { background: var(--red); }
+
+  .db-card:nth-child(1) { animation-delay: 0.05s; }
+  .db-card:nth-child(2) { animation-delay: 0.10s; }
+  .db-card:nth-child(3) { animation-delay: 0.15s; }
+  .db-card:nth-child(4) { animation-delay: 0.20s; }
+
+  .card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .card-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .card-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    line-height: 1;
+  }
+
+  .card-value.blue   { color: var(--blue); }
+  .card-value.green  { color: var(--green); }
+  .card-value.orange { color: var(--orange); }
+  .card-value.red    { color: var(--red); }
+
+  /* ── Chart ── */
+  .db-chart-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 28px 22px;
+    animation: fadeUp 0.5s 0.25s ease both;
+  }
+
+  .chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+
+  .chart-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+  }
+
+  .chart-badge {
+    font-size: 0.75rem;
+    color: var(--blue);
+    background: rgba(79,142,247,0.12);
+    border: 1px solid rgba(79,142,247,0.25);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  canvas#grafico {
+    max-height: 300px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .db-wrap { padding: 20px 16px 40px; }
+    .db-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .db-title { font-size: 1.5rem; }
+  }
+</style>
+
+<div class="db-wrap">
+
+  <div class="db-header">
+    <h2 class="db-title">📊 Dash<span>board</span></h2>
+    <span class="db-date" id="db-date-label"></span>
+  </div>
+
+  <div class="db-cards">
+    <div class="db-card blue">
+      <span class="card-icon">👤</span>
+      <div class="card-label">Clientes</div>
+      <p class="card-value blue">{{ clientes }}</p>
+    </div>
+
+    <div class="db-card green">
+      <span class="card-icon">📦</span>
+      <div class="card-label">Produtos</div>
+      <p class="card-value green">{{ produtos }}</p>
+    </div>
+
+    <div class="db-card orange">
+      <span class="card-icon">🧾</span>
+      <div class="card-label">Vendas</div>
+      <p class="card-value orange">{{ vendas }}</p>
+    </div>
+
+    <div class="db-card red">
+      <span class="card-icon">💰</span>
+      <div class="card-label">Faturamento</div>
+      <p class="card-value red">R$ {{ "%.2f"|format(faturamento) }}</p>
+    </div>
+  </div>
+
+  <div class="db-chart-box">
+    <div class="chart-header">
+      <h3 class="chart-title">📈 Faturamento por Dia</h3>
+      <span class="chart-badge">Últimas vendas</span>
+    </div>
+    <canvas id="grafico"></canvas>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Data atual no header
+  const now = new Date();
+  document.getElementById('db-date-label').textContent =
+    now.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+
+  // Gráfico
+  const ctx = document.getElementById('grafico').getContext('2d');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ datas | tojson | safe }},
+      datasets: [{
+        label: 'Total Vendido (R$)',
+        data: {{ valores | tojson | safe }},
+        borderColor: '#4f8ef7',
+        backgroundColor: 'rgba(79,142,247,0.08)',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#4f8ef7',
+        pointRadius: 4,
+        pointHoverRadius: 7,
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a1d27',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          titleColor: '#e8eaf0',
+          bodyColor: '#4f8ef7',
+          callbacks: {
+            label: ctx => ' R$ ' + ctx.parsed.y.toFixed(2)
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { color: '#7b8099', font: { size: 11 } }
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: {
+            color: '#7b8099',
+            font: { size: 11 },
+            callback: v => 'R$ ' + v.toFixed(0)
+          }
+        }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

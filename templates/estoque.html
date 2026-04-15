@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>📦 Estoque Completo</h2>
+
+<table border="1" width="100%">
+<tr>
+    <th>Produto</th>
+    <th>Preço</th>
+    <th>Quantidade</th>
+</tr>
+
+{% for p in produtos %}
+<tr>
+    <td>{{ p[1] }}</td>
+    <td>R$ {{ p[2] }}</td>
+    <td>{{ p[3] }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}
