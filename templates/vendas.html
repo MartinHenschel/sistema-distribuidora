@@ -2,54 +2,269 @@
 
 {% block content %}
 
-<h2>🧾 Nova Venda</h2>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
-<!-- BOTÃO HISTÓRICO -->
-<button type="button" onclick="window.location.href='/historico'">
-    📊 Ver Histórico de Vendas
-</button>
+<style>
+  :root {
+    --bg:  #437f4b;
+    --surface: #fafaf8e6;
+    --surface2: #e8e8e4;
+    --border: rgba(0,0,0,0.08);
+    --accent: #fbfbfb;
+    --accent-soft: rgba(90,95,110,0.10);
+    --accent-border: rgba(90,95,110,0.22);
+    --text: #1e2030;
+    --muted: #8a8f9e;
+  }
 
-<br><br>
+  .pg-wrap {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 36px 32px 60px;
+    color: var(--text);
+    box-sizing: border-box;
+  }
 
-<!-- MENSAGENS -->
-{% with messages = get_flashed_messages() %}
+  /* ── Header ── */
+  .pg-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+  }
+
+  .pg-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0;
+    color: #fff;
+  }
+
+  .pg-title span { color: var(--orange); }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--orange);
+    background: rgba(247,147,79,0.10);
+    border: 1px solid rgba(247,147,79,0.25);
+    padding: 9px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(247,147,79,0.20);
+    transform: translateY(-2px);
+  }
+
+  /* ── Flash messages ── */
+  .flash-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 560px;
+  }
+
+  .flash-list li {
+    font-size: 0.85rem;
+    padding: 11px 16px;
+    border-radius: 10px;
+    background: rgba(247,79,110,0.10);
+    border: 1px solid rgba(247,79,110,0.25);
+    color: var(--red);
+    animation: fadeUp 0.3s ease both;
+  }
+
+  /* ── Card formulário ── */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.1s ease both;
+    max-width: 560px;
+  }
+
+  .form-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--orange);
+    border-radius: 16px 16px 0 0;
+  }
+
+  .form-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 24px;
+  }
+
+  /* ── Campos ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: var(--muted);
+  }
+
+  .form-input,
+  .form-select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237b8099' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  .form-select option {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .form-input::placeholder { color: var(--muted); opacity: 0.6; }
+
+  .form-input:focus,
+  .form-select:focus {
+    border-color: rgba(247,147,79,0.5);
+    box-shadow: 0 0 0 3px rgba(247,147,79,0.08);
+  }
+
+  /* ── Botão Vender ── */
+  .btn-save {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--orange);
+    border: none;
+    padding: 12px 32px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  .btn-save:hover {
+    opacity: 0.88;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(247,147,79,0.35);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .pg-wrap { padding: 20px 16px 40px; }
+    .pg-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .pg-title { font-size: 1.5rem; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="pg-wrap">
+
+  <div class="pg-header">
+    <h2 class="pg-title">🧾 Nova <span>Venda</span></h2>
+    <a class="btn-secondary" href="/historico">📊 Ver Histórico de Vendas</a>
+  </div>
+
+  {% with messages = get_flashed_messages() %}
     {% if messages %}
-        <ul>
-            {% for msg in messages %}
-                <li>{{ msg }}</li>
-            {% endfor %}
-        </ul>
+      <ul class="flash-list">
+        {% for msg in messages %}
+          <li>⚠️ {{ msg }}</li>
+        {% endfor %}
+      </ul>
     {% endif %}
-{% endwith %}
+  {% endwith %}
 
-<form action="/add_venda" method="POST">
+  <div class="form-card">
+    <h3 class="form-card-title">➕ Registrar Venda</h3>
 
-    <label>Cliente:</label>
-    <select name="cliente">
-        {% for c in clientes %}
-            <option value="{{ c[0] }}">{{ c[1] }}</option>
-        {% endfor %}
-    </select>
+    <form action="/add_venda" method="POST">
+      <div class="form-grid">
 
-    <br><br>
+        <div class="form-group full">
+          <label class="form-label" for="cliente">Cliente</label>
+          <select class="form-select" id="cliente" name="cliente">
+            {% for c in clientes %}
+              <option value="{{ c[0] }}">{{ c[1] }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
-    <label>Produto:</label>
-    <select name="produto">
-        {% for p in produtos %}
-            <option value="{{ p[0] }}">
-                {{ p[1] }} (Estoque: {{ p[3] }})
-            </option>
-        {% endfor %}
-    </select>
+        <div class="form-group full">
+          <label class="form-label" for="produto">Produto</label>
+          <select class="form-select" id="produto" name="produto">
+            {% for p in produtos %}
+              <option value="{{ p[0] }}">{{ p[1] }} — Estoque: {{ p[3] }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
-    <br><br>
+        <div class="form-group full">
+          <label class="form-label" for="quantidade">Quantidade</label>
+          <input class="form-input" type="number" id="quantidade" name="quantidade" placeholder="0" min="1" required>
+        </div>
 
-    <input type="number" name="quantidade" placeholder="Quantidade" required>
+      </div>
 
-    <br><br>
+      <button class="btn-save" type="submit">Registrar Venda</button>
+    </form>
+  </div>
 
-    <button type="submit">Vender</button>
-
-</form>
+</div>
 
 {% endblock %}

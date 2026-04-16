@@ -1,22 +1,220 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Sistema Distribuidora</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Distribuidora</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #222636;
+      --border: rgba(255,255,255,0.07);
+      --blue: #4f8ef7;
+      --green: #2ecc8f;
+      --orange: #f7934f;
+      --red: #f74f6e;
+      --text: #e8eaf0;
+      --muted: #7b8099;
+      --sidebar-w: 220px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0 32px;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      padding: 0 22px 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-logo span { color: var(--blue); }
+
+    .sidebar-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      padding: 0 22px;
+      margin-bottom: 6px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 0;
+      transition: color 0.2s, background 0.2s;
+      position: relative;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    .nav-link.active {
+      color: #fff;
+      background: var(--surface2);
+    }
+
+    .nav-link.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--blue);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 18px 22px 0;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── Main ── */
+    .main-content {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    /* ── Mobile toggle ── */
+    .mobile-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .mobile-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .mobile-logo span { color: var(--blue); }
+
+    .hamburger {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+
+      .sidebar.open { transform: translateX(0); }
+
+      .main-content { margin-left: 0; }
+
+      .mobile-bar { display: flex; }
+    }
+  </style>
 </head>
 <body>
 
-    <h1>📦 Sistema da Distribuidora</h1>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">📦 Distri<span>buidora</span></div>
 
-    <a href="/">Home</a> |
-    <a href="/clientes">Clientes</a> |
-    <a href="/produtos">Produtos</a> |
-    <a href="/vendas">Vendas</a> |
-    <a href="/dashboard">Dashboard</a>
+    <div class="sidebar-label">Menu</div>
 
-    <hr>
+    <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+    <a class="nav-link {% if '/clientes' in request.path %}active{% endif %}" href="/clientes">
+      <span class="nav-icon">👤</span> Clientes
+    </a>
+    <a class="nav-link {% if '/produtos' in request.path or '/estoque' in request.path %}active{% endif %}" href="/produtos">
+      <span class="nav-icon">📦</span> Produtos
+    </a>
+    <a class="nav-link {% if '/vendas' in request.path or '/historico' in request.path %}active{% endif %}" href="/vendas">
+      <span class="nav-icon">🧾</span> Vendas
+    </a>
 
+    <div class="sidebar-footer">Sistema v1.0</div>
+  </aside>
+
+  <!-- Mobile bar -->
+  <div class="mobile-bar">
+    <span class="mobile-logo">📦 Distri<span>buidora</span></span>
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+  </div>
+
+  <!-- Conteúdo -->
+  <main class="main-content">
     {% block content %}{% endblock %}
+  </main>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+    // fecha sidebar ao clicar fora no mobile
+    document.addEventListener('click', function(e) {
+      const sidebar = document.getElementById('sidebar');
+      if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !e.target.closest('.mobile-bar')) {
+        sidebar.classList.remove('open');
+      }
+    });
+  </script>
 
 </body>
+</html>
 </html>

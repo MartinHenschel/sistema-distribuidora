@@ -49,11 +49,6 @@ def criar_banco():
 
 criar_banco()
 
-# ================= HOME =================
-@app.route('/')
-def home():
-    return render_template('index.html')
-
 
 # ================= CLIENTES =================
 @app.route('/clientes')

@@ -2,34 +2,254 @@
 
 {% block content %}
 
-<h2>📊 Histórico de Vendas</h2>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
-<form method="GET" action="/historico">
-    <input type="text" name="busca" placeholder="Buscar cliente..." value="{{ busca }}">
-    <button type="submit">Buscar</button>
-</form>
+<style>
+  :root {
+      --bg: #437f4b;
+    --surface: #f4f4f4;
+    --surface2: #e8e8e4;
+    --border: rgba(0,0,0,0.08);
+    --accent: #5a5f6e;
+    --accent-soft: rgba(90,95,110,0.10);
+    --accent-border: rgba(90,95,110,0.22);
+    --text: #1e2030;
+    --muted: #8a8f9e;
+  }
 
-<table border="1" width="100%">
-    <tr>
-        <th>ID</th>
-        <th>Cliente</th>
-        <th>Produto</th>
-        <th>Quantidade</th>
-        <th>Total</th>
-        <th>Data</th>
-    </tr>
+  .pg-wrap {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 36px 32px 60px;
+    color: var(--text);
+    box-sizing: border-box;
+  }
 
-    {% for v in vendas %}
-    <tr>
-        <td>{{ v[0] }}</td>
-        <td>{{ v[1] }}</td>
-        <td>{{ v[2] }}</td>
-        <td>{{ v[3] }}</td>
-        <td>R$ {{ v[4] }}</td>
-        <td>{{ v[5] }}</td>
-    </tr>
-    {% endfor %}
+  /* ── Header ── */
+  .pg-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
 
-</table>
+  .pg-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0;
+    color: #fff;
+  }
+
+  .pg-title span { color: var(--orange); }
+
+  .count-badge {
+    font-size: 0.75rem;
+    color: var(--orange);
+    background: rgba(247,147,79,0.10);
+    border: 1px solid rgba(247,147,79,0.25);
+    padding: 4px 14px;
+    border-radius: 20px;
+  }
+
+  /* ── Busca ── */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.4s 0.05s ease both;
+  }
+
+  .search-input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    outline: none;
+    width: 280px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-input::placeholder { color: var(--muted); opacity: 0.6; }
+
+  .search-input:focus {
+    border-color: rgba(247,147,79,0.5);
+    box-shadow: 0 0 0 3px rgba(247,147,79,0.08);
+  }
+
+  .btn-search {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fff;
+    background: var(--orange);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .btn-search:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* ── Tabela ── */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+
+  .table-card table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table-card thead tr {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-card th {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    padding: 14px 18px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .table-card td {
+    font-size: 0.88rem;
+    color: var(--text);
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .table-card tbody tr:last-child td { border-bottom: none; }
+
+  .table-card tbody tr { transition: background 0.15s; }
+  .table-card tbody tr:hover { background: var(--surface2); }
+
+  /* id badge */
+  .id-badge {
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+
+  /* total */
+  .total-value {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--orange);
+  }
+
+  /* date badge */
+  .date-badge {
+    font-size: 0.78rem;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+  }
+
+  /* qty */
+  .qty {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 0.95rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    animation: fadeUp 0.4s 0.1s ease both;
+  }
+
+  .empty-state .empty-icon { font-size: 2.4rem; display: block; margin-bottom: 12px; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 700px) {
+    .pg-wrap { padding: 20px 16px 40px; }
+    .pg-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .pg-title { font-size: 1.5rem; }
+    .search-bar { flex-wrap: wrap; }
+    .search-input { width: 100%; }
+    .table-card { overflow-x: auto; }
+  }
+</style>
+
+<div class="pg-wrap">
+
+  <div class="pg-header">
+    <h2 class="pg-title">📊 Histórico de <span>Vendas</span></h2>
+    <span class="count-badge">{{ vendas|length }} venda{% if vendas|length != 1 %}s{% endif %}</span>
+  </div>
+
+  <form class="search-bar" method="GET" action="/historico">
+    <input class="search-input" type="text" name="busca" placeholder="🔍  Buscar cliente..." value="{{ busca }}">
+    <button class="btn-search" type="submit">Buscar</button>
+  </form>
+
+  {% if vendas|length == 0 %}
+    <div class="empty-state">
+      <span class="empty-icon">🧾</span>
+      Nenhuma venda encontrada.
+    </div>
+  {% else %}
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Produto</th>
+            <th>Qtd</th>
+            <th>Total</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for v in vendas %}
+          <tr>
+            <td><span class="id-badge">#{{ v[0] }}</span></td>
+            <td>{{ v[1] }}</td>
+            <td>{{ v[2] }}</td>
+            <td><span class="qty">{{ v[3] }}</span></td>
+            <td><span class="total-value">R$ {{ "%.2f"|format(v[4]) }}</span></td>
+            <td><span class="date-badge">{{ v[5] }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+</div>
 
 {% endblock %}

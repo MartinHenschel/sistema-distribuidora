@@ -2,23 +2,198 @@
 
 {% block content %}
 
-<h2>📦 Estoque Completo</h2>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
-<table border="1" width="100%">
-<tr>
-    <th>Produto</th>
-    <th>Preço</th>
-    <th>Quantidade</th>
-</tr>
+<style>
+  :root {
+    --bg:  #437f4b;
+    --surface: #fafaf8;
+    --surface2: #e8e8e4;
+    --border: rgba(0,0,0,0.08);
+    --accent: #5a5f6e;
+    --accent-soft: rgba(90,95,110,0.10);
+    --accent-border: rgba(90,95,110,0.22);
+    --text: #1e2030;
+    --muted: #8a8f9e;
+  }
 
-{% for p in produtos %}
-<tr>
-    <td>{{ p[1] }}</td>
-    <td>R$ {{ p[2] }}</td>
-    <td>{{ p[3] }}</td>
-</tr>
-{% endfor %}
+  .pg-wrap {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 36px 32px 60px;
+    color: var(--text);
+    box-sizing: border-box;
+  }
 
-</table>
+  /* ── Header ── */
+  .pg-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .pg-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .pg-title span { color: var(--accent); }
+
+  .count-badge {
+    font-size: 0.75rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    padding: 4px 14px;
+    border-radius: 20px;
+  }
+
+  /* ── Tabela ── */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.1s ease both;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  }
+
+  .table-card table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table-card thead tr {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .table-card th {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    padding: 14px 20px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .table-card td {
+    font-size: 0.88rem;
+    color: var(--text);
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-card tbody tr:last-child td { border-bottom: none; }
+
+  .table-card tbody tr {
+    transition: background 0.15s;
+  }
+
+  .table-card tbody tr:hover {
+    background: var(--surface2);
+  }
+
+  /* badges de quantidade */
+  .qty-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 20px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+  }
+
+  .qty-badge.low {
+    background: rgba(220,80,80,0.08);
+    color: #c04040;
+    border-color: rgba(220,80,80,0.2);
+  }
+
+  /* preço */
+  .price {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--accent);
+  }
+
+  /* empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 0.95rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    animation: fadeUp 0.4s 0.1s ease both;
+  }
+
+  .empty-state .empty-icon { font-size: 2.4rem; display: block; margin-bottom: 12px; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 700px) {
+    .pg-wrap { padding: 20px 16px 40px; }
+    .pg-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .pg-title { font-size: 1.5rem; }
+    .table-card { overflow-x: auto; }
+  }
+</style>
+
+<div class="pg-wrap">
+
+  <div class="pg-header">
+    <h2 class="pg-title">📦 Estoque <span>Completo</span></h2>
+    <span class="count-badge">{{ produtos|length }} produto{% if produtos|length != 1 %}s{% endif %}</span>
+  </div>
+
+  {% if produtos|length == 0 %}
+    <div class="empty-state">
+      <span class="empty-icon">📭</span>
+      Nenhum produto no estoque.
+    </div>
+  {% else %}
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in produtos %}
+          <tr>
+            <td>{{ p[1] }}</td>
+            <td><span class="price">R$ {{ "%.2f"|format(p[2]) }}</span></td>
+            <td>
+              <span class="qty-badge {% if p[3] <= 5 %}low{% endif %}">
+                {{ p[3] }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+</div>
 
 {% endblock %}
