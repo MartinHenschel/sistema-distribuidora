@@ -100,6 +100,3 @@ http://localhost:5000
 
 ---
 
-## 👨‍💻 Autor
-
-Feito por **[Seu Nome]** — [LinkedIn](https://linkedin.com/in/seu-perfil) · [GitHub](https://github.com/seu-usuario)
