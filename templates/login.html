@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #3d6b4f;
+    --surface: #f5f5f0;
+    --surface2: #eaeae4;
+    --border: rgba(0,0,0,0.08);
+    --green: #2d5a3d;
+    --green-light: #4a8c61;
+    --text: #1a2e22;
+    --muted: #6b8a74;
+    --red: #c0392b;
+    --white: #ffffff;
+  }
+
+  .auth-wrap {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .auth-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+
+  .auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--green);
+    border-radius: 18px 18px 0 0;
+  }
+
+  .auth-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--green);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .auth-logo span { color: var(--green-light); }
+
+  .auth-sub {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+
+  .flash-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 18px;
+  }
+
+  .flash-list li {
+    font-size: 0.83rem;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.2);
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: var(--muted);
+  }
+
+  .form-input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .form-input::placeholder { color: var(--muted); opacity: 0.7; }
+
+  .form-input:focus {
+    border-color: var(--green-light);
+    box-shadow: 0 0 0 3px rgba(74,140,97,0.12);
+  }
+
+  .btn-login {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--white);
+    background: var(--green);
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  }
+
+  .btn-login:hover {
+    background: var(--green-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(45,90,61,0.3);
+  }
+
+  .auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .auth-footer a {
+    color: var(--green);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .auth-footer a:hover { text-decoration: underline; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">📦 Distri<span>buidora</span></div>
+    <div class="auth-sub">Faça login para acessar o sistema</div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash-list">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form action="/login" method="POST">
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input class="form-input" type="email" id="email" name="email" placeholder="seu@email.com" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="senha">Senha</label>
+        <input class="form-input" type="password" id="senha" name="senha" placeholder="••••••••" required>
+      </div>
+
+      <button class="btn-login" type="submit">Entrar</button>
+    </form>
+
+    <div class="auth-footer">
+      Não tem conta? <a href="/registrar">Criar conta</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
